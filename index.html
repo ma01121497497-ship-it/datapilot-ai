@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdn.jsdelivr.net;">
 <title>DataPilot AI — By Mohamed El-Khatib | Smart Data Analytics</title>
 <meta name="description" content="Privacy-first, automated data analytics workspace by Mohamed El-Khatib: ingestion, profiling, quality, cleaning, SQL, EDA, KPIs, dashboards & reports.">
 <style>
@@ -43,7 +44,7 @@ body{font-family:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto
 .priv svg{width:13px;height:13px;flex:0 0 13px;margin-top:2px}
 /* ---------- Main ---------- */
 #main{flex:1;min-width:0;display:flex;flex-direction:column}
-#topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 22px}
+#topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:10px 22px;flex-wrap:wrap}
 #topbar .ds{font-size:13.5px;font-weight:700;color:var(--navy)}
 #topbar .meta{font-size:12px;color:var(--sub)}
 #topbar .sp{flex:1}
@@ -73,14 +74,16 @@ h3{font-size:13.5px;font-weight:700;color:var(--navy)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:#f0f9ff}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
-.btn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--navy);cursor:pointer;transition:all .15s;font-family:inherit}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--navy);cursor:pointer;transition:all .15s;font-family:inherit}
 .btn:hover{border-color:var(--sky);color:var(--sky);transform:translateY(-1px);box-shadow:0 4px 10px -6px rgba(10,25,47,.25)}
 .btn.primary{background:var(--grad);border:none;color:#fff;box-shadow:0 6px 16px -8px rgba(2,132,199,.75)}
 .btn.primary:hover{filter:brightness(1.07);color:#fff}
 .btn.gold{background:var(--grad-gold);border:none;color:#fff;box-shadow:0 6px 16px -8px rgba(245,158,11,.7)}
+.btn.gold:hover{filter:brightness(1.06);color:#fff}
 .btn.danger{color:var(--red);border-color:#fecaca;background:#fff}
 .btn.danger:hover{background:#fef2f2;color:var(--red);border-color:var(--red)}
 .btn.sm{padding:5px 10px;font-size:11.5px;border-radius:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 select,input[type=text],input[type=number],textarea{font-family:inherit;font-size:12.5px;color:var(--ink);background:#fff;border:1px solid #cbd5e1;border-radius:9px;padding:8px 10px;outline:none;transition:border .15s, box-shadow .15s;width:100%}
 select:focus,input:focus,textarea:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
 textarea{resize:vertical;min-height:80px}
@@ -130,6 +133,8 @@ label.f{display:block;font-size:11px;font-weight:700;text-transform:uppercase;le
 .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,16px);background:#0A192F;color:#fff;border:1px solid #38BDF8;font-size:12.5px;font-weight:600;padding:10px 18px;border-radius:11px;opacity:0;transition:all .3s;z-index:99;box-shadow:0 10px 30px -8px rgba(10,25,47,.6);pointer-events:none}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .toast.err{background:#991b1b;border-color:#fca5a5}
+.modal-bg{position:fixed;inset:0;background:rgba(10,25,47,.6);backdrop-filter:blur(4px);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:24px;box-shadow:0 25px 60px -15px rgba(10,25,47,.5);animation:fade .2s;border:1px solid var(--line)}
 canvas.chart{display:block;width:100%}
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
 .insight{border-left:4px solid var(--sky)}
@@ -141,6 +146,12 @@ canvas.chart{display:block;width:100%}
 .sql-box{background:#0A192F;color:#38BDF8;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;padding:12px;border-radius:10px;border:1px solid #1e293b;min-height:95px}
 .sql-box:focus{border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.2)}
 @media(max-width:860px){#sidebar{width:64px;flex-basis:64px}.brand b,.brand small,.nav-item span,.nav-label,.author-box,.priv{display:none}.nav-item{justify-content:center;padding:9px}.side-foot{padding:10px}}
+@media print{
+  #sidebar,#topbar,.no-print{display:none!important}
+  #main{width:100%}
+  #view{padding:0;max-width:100%}
+  .card{box-shadow:none;border:1px solid #cbd5e1}
+}
 </style>
 </head>
 <body>
@@ -166,12 +177,16 @@ canvas.chart{display:block;width:100%}
       <span class="ds" id="dsName">No dataset loaded</span>
       <span class="meta" id="dsMeta"></span>
       <span class="sp"></span>
-      <button class="btn sm" onclick="downloadCSV()" title="Download the current working table as CSV">Export CSV</button>
+      <button class="btn sm" id="btnUndo" onclick="undoLast()" disabled title="Undo last cleaning/transformation step">↩ Undo</button>
+      <button class="btn sm primary" onclick="runAutoPilot()" title="Auto-clean, generate KPIs, and build dashboard charts in one click">⚡ Auto-Pilot</button>
+      <button class="btn sm" onclick="downloadCSV()" title="Download sanitized CSV">Export CSV</button>
       <button class="btn sm gold" onclick="saveToLibrary()" title="Persist current dataset to browser storage">Save dataset</button>
+      <button class="btn sm danger" onclick="wipeAllStorage()" title="Erase all local sessions & saved datasets from this browser">Clear Data</button>
     </header>
     <div id="view"></div>
   </main>
 </div>
+<div id="modalRoot"></div>
 <script>
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -183,7 +198,7 @@ const fmt=n=>{ if(n==null||isNaN(n))return '—'; if(typeof n!=='number')return 
   if(Number.isInteger(n))return n.toLocaleString('en-US'); return (+n.toFixed(2)).toLocaleString('en-US'); };
 const pct=x=>isNaN(x)?'—':(x*100).toFixed(1)+'%';
 function toast(msg,type){ const t=document.createElement('div'); t.className='toast'+(type==='err'?' err':''); t.textContent=msg; document.body.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('show')); setTimeout(()=>{t.classList.remove('show'); setTimeout(()=>t.remove(),320);},2700); }
+  requestAnimationFrame(()=>t.classList.add('show')); setTimeout(()=>{t.classList.remove('show'); setTimeout(()=>t.remove(),320);},2800); }
 function parseNum(v){
   if(typeof v==='number') return v;
   if(v==null) return NaN;
@@ -193,14 +208,30 @@ function parseNum(v){
   const neg=/^\(.*\)$/.test(s); if(neg) s=s.slice(1,-1);
   const n=Number(s); return isNaN(n)?NaN:(neg?-n:n);
 }
-/* ---------- State ---------- */
-const S={ tab:'home', dataset:null, derived:null, cleanLog:[], kpis:[], charts:[], sqlRes:null, sqlQuery:'SELECT * FROM data LIMIT 15' };
+/* ---------- State & Undo History ---------- */
+const S={ tab:'home', dataset:null, derived:null, cleanLog:[], kpis:[], charts:[], sqlRes:null, sqlQuery:'SELECT * FROM data LIMIT 15', history:[] };
 const active=()=>S.derived||S.dataset;
 let PERSIST=true;
+
+function pushHistory(){
+  if(!S.dataset) return;
+  if(S.history.length>=15) S.history.shift();
+  S.history.push(JSON.stringify({dataset:S.dataset,derived:S.derived,cleanLog:S.cleanLog}));
+  updateTopbar();
+}
+function undoLast(){
+  if(!S.history.length) return toast('Nothing to undo','err');
+  const prev=JSON.parse(S.history.pop());
+  S.dataset=prev.dataset; S.derived=prev.derived; S.cleanLog=prev.cleanLog;
+  Session.save(); updateTopbar(); render();
+  toast('Reverted last step');
+}
+
 const Session={
-  key:'dp_khatib_v2',
+  key:'dp_khatib_v3',
   save(){ if(!PERSIST)return; try{ localStorage.setItem(this.key, JSON.stringify({dataset:S.dataset,derived:S.derived,cleanLog:S.cleanLog,kpis:S.kpis,charts:S.charts})); $('#saveState').textContent='Saved locally'; }catch(e){ PERSIST=false; $('#saveState').textContent='In-memory only'; } },
-  load(){ try{ const raw=localStorage.getItem(this.key); if(!raw)return false; const d=JSON.parse(raw); Object.assign(S,{dataset:d.dataset||null,derived:d.derived||null,cleanLog:d.cleanLog||[],kpis:d.kpis||[],charts:d.charts||[]}); return true; }catch(e){ return false; } }
+  load(){ try{ const raw=localStorage.getItem(this.key); if(!raw)return false; const d=JSON.parse(raw); Object.assign(S,{dataset:d.dataset||null,derived:d.derived||null,cleanLog:d.cleanLog||[],kpis:d.kpis||[],charts:d.charts||[]}); return true; }catch(e){ return false; } },
+  clear(){ try{localStorage.removeItem(this.key);}catch(e){} }
 };
 const DB={
   _p:null,
@@ -209,9 +240,20 @@ const DB={
     r.onsuccess=e=>res(e.target.result); r.onerror=()=>rej(r.error); }catch(e){rej(e);} }); return this._p; },
   async put(rec){ const db=await this.open(); return new Promise((res,rej)=>{ const t=db.transaction('datasets','readwrite'); t.objectStore('datasets').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); }); },
   async all(){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const r=db.transaction('datasets').objectStore('datasets').getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>rej(r.error); }); }catch(e){ return []; } },
-  async del(id){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const t=db.transaction('datasets','readwrite'); t.objectStore('datasets').delete(id); t.oncomplete=res; t.onerror=()=>rej(t.error); }); }catch(e){} }
+  async del(id){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const t=db.transaction('datasets','readwrite'); t.objectStore('datasets').delete(id); t.oncomplete=res; t.onerror=()=>rej(t.error); }); }catch(e){} },
+  async clearAll(){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const t=db.transaction('datasets','readwrite'); t.objectStore('datasets').clear(); t.oncomplete=res; t.onerror=()=>rej(t.error); }); }catch(e){} }
 };
-/* ---------- CSV & Excel ---------- */
+
+async function wipeAllStorage(){
+  if(!confirm('Are you sure you want to permanently clear all local sessions and saved datasets from this browser?')) return;
+  Session.clear();
+  await DB.clearAll();
+  S.dataset=null; S.derived=null; S.cleanLog=[]; S.kpis=[]; S.charts=[]; S.sqlRes=null; S.history=[]; S._lib=[];
+  updateTopbar(); go('home');
+  toast('All local data & sessions wiped');
+}
+
+/* ---------- CSV (With Formula Injection Protection) & Excel ---------- */
 function detectDelim(text){
   const first=(String(text).slice(0,4000).split(/\r?\n/)[0])||'';
   let best=',', mx=0;
@@ -238,21 +280,40 @@ function parseCSV(text){
   const out=rows.map(r=>{ const o={}; headers.forEach((h,i)=>o[h]=r[i]===undefined?'':r[i]); return o; });
   return {headers,rows:out};
 }
-function toCSV(headers,rows){
-  const q=v=>{ v=String(v??''); return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
-  return [headers.map(q).join(','), ...rows.map(r=>headers.map(h=>q(r[h])).join(','))].join('\n');
+function sanitizeCellForCSV(v){
+  let s=String(v??'');
+  // Prevent CSV Formula Injection when opened in Excel/Sheets
+  if(/^[=+\-@\t\r]/.test(s) && isNaN(Number(s))) s="'"+s;
+  return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
 }
-async function maybeParseWorkbook(buf){
-  if(typeof XLSX==='undefined') return null;
-  try{
-    const wb=XLSX.read(buf,{type:'array'});
-    const ws=wb.Sheets[wb.SheetNames[0]];
-    const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-    if(!aoa.length) return null;
-    const headers=aoa[0].map((h,i)=>String(h).trim()||('col_'+(i+1)));
-    const rows=aoa.slice(1).filter(r=>r.some(c=>c!=='')).map(r=>{ const o={}; headers.forEach((h,i)=>o[h]=r[i]===undefined?'':r[i]); return o; });
-    return {headers,rows};
-  }catch(e){ return null; }
+function toCSV(headers,rows){
+  return [headers.map(sanitizeCellForCSV).join(','), ...rows.map(r=>headers.map(h=>sanitizeCellForCSV(r[h])).join(','))].join('\n');
+}
+function parseSheetFromWB(wb, sheetName){
+  const ws=wb.Sheets[sheetName];
+  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(!aoa.length) return null;
+  const headers=aoa[0].map((h,i)=>String(h).trim()||('col_'+(i+1)));
+  const rows=aoa.slice(1).filter(r=>r.some(c=>c!=='')).map(r=>{ const o={}; headers.forEach((h,i)=>o[h]=r[i]===undefined?'':r[i]); return o; });
+  return {headers,rows};
+}
+function showSheetPicker(wb, baseName, fileName){
+  $('#modalRoot').innerHTML=`<div class="modal-bg"><div class="modal">
+    <h3>Select Excel Worksheet</h3>
+    <p class="sub" style="margin:6px 0 14px"><b>${esc(fileName)}</b> contains ${wb.SheetNames.length} sheets. Choose which one to analyze:</p>
+    <select id="sheetSel">${wb.SheetNames.map(s=>'<option>'+esc(s)+'</option>').join('')}</select>
+    <div class="row" style="margin-top:16px;justify-content:flex-end">
+      <button class="btn" onclick="$('#modalRoot').innerHTML=''">Cancel</button>
+      <button class="btn primary" id="btnLoadSheet">Load Sheet</button>
+    </div>
+  </div></div>`;
+  $('#btnLoadSheet').onclick=()=>{
+    const sh=$('#sheetSel').value;
+    $('#modalRoot').innerHTML='';
+    const parsed=parseSheetFromWB(wb,sh);
+    if(parsed) setDataset({name:baseName+' ['+sh+']',headers:parsed.headers,rows:parsed.rows,source:fileName},'Loaded sheet: '+sh);
+    else toast('Selected sheet is empty','err');
+  };
 }
 /* ---------- Statistics ---------- */
 function inferType(vals){
@@ -315,6 +376,59 @@ function qualityReport(ds){
   return {score,missing,missingPct:Math.round(missing/total*1000)/10,dupRows,invalid,
     completeness:Math.round(completeness*100),uniqueness:Math.round(uniqueness*100),validity:Math.round(validity*100),colIssues,types};
 }
+/* ---------- Auto-Pilot One-Click Analyzer ---------- */
+function runAutoPilot(){
+  if(!needDS()) return;
+  pushHistory();
+  const ds=active();
+  // 1. Dedupe & Trim
+  const seen=new Set();
+  const before=ds.rows.length;
+  ds.rows=ds.rows.map(r=>{
+    const o={...r}; Object.keys(o).forEach(k=>{ if(typeof o[k]==='string') o[k]=o[k].trim(); }); return o;
+  }).filter(r=>{
+    const k=JSON.stringify(ds.headers.map(h=>r[h])); if(seen.has(k)) return false; seen.add(k); return true;
+  });
+  logOp('Auto-Pilot Clean','Trimmed whitespace & removed '+(before-ds.rows.length)+' duplicates');
+
+  // 2. Auto KPIs
+  S.kpis=[];
+  const nums=numericCols(ds), cats=catCols(ds);
+  S.kpis.push({id:uid(),label:'Total Records',agg:'count',col:ds.headers[0],group:''});
+  nums.slice(0,2).forEach(h=>{
+    S.kpis.push({id:uid(),label:'Total '+h,agg:'sum',col:h,group:''});
+    S.kpis.push({id:uid(),label:'Avg '+h,agg:'avg',col:h,group:''});
+  });
+
+  // 3. Auto Charts
+  S.charts=[];
+  const strCats=cats.filter(c=>datasetTypes(ds)[c]==='string');
+  const dateCol=ds.headers.find(h=>datasetTypes(ds)[h]==='date');
+  if(strCats.length && nums.length){
+    const x=strCats[0], y=nums[0];
+    const m=new Map();
+    ds.rows.forEach(r=>{ const k=String(r[x]||'(blank)'); if(!m.has(k))m.set(k,[]); m.get(k).push(r[y]); });
+    const top=[...m.entries()].sort((a,b)=>vizAgg('sum',b[1])-vizAgg('sum',a[1])).slice(0,12);
+    S.charts.push({id:uid(),cfg:{type:'bar',labels:top.map(e=>e[0]),series:[{name:'Sum of '+y,values:top.map(e=>vizAgg('sum',e[1]))}],x,y,agg:'sum',title:'Total '+y+' by '+x}});
+    if(top.length<=8){
+      S.charts.push({id:uid(),cfg:{type:'pie',labels:top.map(e=>e[0]),series:[{name:'Sum of '+y,values:top.map(e=>vizAgg('sum',e[1]))}],x,y,agg:'sum',title:'Share of '+y+' by '+x}});
+    }
+  }
+  if(dateCol && nums.length){
+    const y=nums[0];
+    const m=new Map();
+    ds.rows.forEach(r=>{ const k=String(r[dateCol]).slice(0,10); if(!m.has(k))m.set(k,[]); m.get(k).push(r[y]); });
+    const sorted=[...m.entries()].sort((a,b)=>a[0].localeCompare(b[0])).slice(0,30);
+    S.charts.push({id:uid(),cfg:{type:'line',labels:sorted.map(e=>e[0]),series:[{name:'Sum of '+y,values:sorted.map(e=>vizAgg('sum',e[1]))}],x:dateCol,y,agg:'sum',title:y+' Trend Over Time'}});
+  } else if(nums.length){
+    const vals=ds.rows.map(r=>parseNum(r[nums[0]])).filter(v=>!isNaN(v));
+    S.charts.push({id:uid(),cfg:{type:'hist',labels:vals,series:[{name:nums[0],values:vals}],x:nums[0],title:'Distribution of '+nums[0],hist:true}});
+  }
+
+  Session.save(); updateTopbar(); go('dashboard');
+  toast('⚡ Auto-Pilot complete: data cleaned, KPIs & dashboard generated!');
+}
+
 /* ---------- Charts (Navy, Sky Blue & Gold Palette) ---------- */
 const Charts=(()=>{
   const palette=['#0284C7','#F59E0B','#0A192F','#38BDF8','#10b981','#D97706','#0369a1','#64748b','#14b8a6','#eab308'];
@@ -472,17 +586,16 @@ function evalExpression(expr, headers, row){
   }
   return parseExpr();
 }
-/* ---------- Built-in SQL Engine (Local-First) ---------- */
+/* ---------- Built-in SQL Engine ---------- */
 function runLocalSQL(sql, ds){
   const q=sql.trim().replace(/;+$/,'');
   const m=q.match(/^SELECT\s+(.+?)\s+FROM\s+\w+(?:\s+WHERE\s+(.+?))?(?:\s+GROUP\s+BY\s+(.+?))?(?:\s+ORDER\s+BY\s+(.+?))?(?:\s+LIMIT\s+(\d+))?$/i);
   if(!m) throw new Error('Supported syntax: SELECT cols FROM data [WHERE cond] [GROUP BY col] [ORDER BY col ASC|DESC] [LIMIT n]');
   let [,selPart,wherePart,groupPart,orderPart,limitPart]=m;
   let rows=[...ds.rows];
-  // 1. WHERE
   if(wherePart){
     const wm=wherePart.match(/^([\w\s]+?)\s*(=|!=|<>|>=|<=|>|<|LIKE)\s*['"]?(.+?)['"]?$/i);
-    if(!wm) throw new Error('Invalid WHERE clause. Example: WHERE region = "North" OR units > 5');
+    if(!wm) throw new Error('Invalid WHERE clause. Example: WHERE region = "Cairo" OR units > 5');
     const col=wm[1].trim(), op=wm[2].toUpperCase(), val=wm[3].trim();
     if(!ds.headers.includes(col)) throw new Error('Unknown column in WHERE: '+col);
     rows=rows.filter(r=>{
@@ -497,7 +610,6 @@ function runLocalSQL(sql, ds){
       return op==='>'?rs>vs:op==='<'?rs<vs:op==='>='?rs>=vs:rs<=vs;
     });
   }
-  // 2. SELECT & GROUP BY
   const fields=selPart.split(',').map(s=>s.trim());
   if(groupPart){
     const gCol=groupPart.trim();
@@ -533,7 +645,6 @@ function runLocalSQL(sql, ds){
       return out;
     });
   }
-  // 3. ORDER BY
   if(orderPart){
     const om=orderPart.trim().match(/^(\w+)(?:\s+(ASC|DESC))?$/i);
     if(om){
@@ -545,7 +656,6 @@ function runLocalSQL(sql, ds){
       });
     }
   }
-  // 4. LIMIT
   if(limitPart) rows=rows.slice(0,parseInt(limitPart,10));
   const headers=rows.length?Object.keys(rows[0]):(selPart==='*'?ds.headers:fields.map(f=>f.split(/\s+AS\s+/i).pop().trim()));
   return {headers,rows};
@@ -607,11 +717,12 @@ function renderNav(){
 function go(tab){ S.tab=tab; renderNav(); render(); window.scrollTo(0,0); }
 function updateTopbar(){
   const ds=active();
+  if($('#btnUndo')) $('#btnUndo').disabled=!S.history.length;
   if(ds){ $('#dsName').textContent=ds.name; $('#dsMeta').textContent='· '+fmt(ds.rows.length)+' rows × '+ds.headers.length+' cols'+(S.derived?' · derived':'');
     $('#dsMeta').style.display=''; } else { $('#dsName').textContent='No dataset loaded'; $('#dsMeta').textContent=''; }
 }
 function setDataset(ds,note){
-  S.dataset=ds; S.derived=null; S.cleanLog=[]; S.kpis=[]; S.charts=[]; S.sqlRes=null;
+  S.dataset=ds; S.derived=null; S.cleanLog=[]; S.kpis=[]; S.charts=[]; S.sqlRes=null; S.history=[];
   Session.save(); updateTopbar();
   toast(note||('Loaded "'+ds.name+'" — '+fmt(ds.rows.length)+' rows'));
   go('profile');
@@ -638,7 +749,7 @@ V.home=function(){
       <div class="drop" id="drop">
         <svg viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
         <div style="font-weight:700;color:var(--navy)">Drop a file here or click to browse</div>
-        <div class="sub" style="font-size:11.5px;margin-top:4px">CSV · TSV · semicolon-delimited · JSON · Excel (.xlsx / .xls)</div>
+        <div class="sub" style="font-size:11.5px;margin-top:4px">CSV · TSV · semicolon-delimited · JSON · Multi-Sheet Excel (.xlsx / .xls)</div>
         <input type="file" id="fileIn" accept=".csv,.tsv,.txt,.json,.xlsx,.xls" style="display:none">
       </div>
       <label class="f">Or paste raw data</label>
@@ -679,7 +790,10 @@ async function handleFile(f){
       toast('Reading Excel…');
       const buf=await f.arrayBuffer();
       await ensureSheetJS();
-      const parsed=await maybeParseWorkbook(buf);
+      if(typeof XLSX==='undefined') return toast('SheetJS unavailable offline','err');
+      const wb=XLSX.read(buf,{type:'array'});
+      if(wb.SheetNames.length>1) return showSheetPicker(wb, name, f.name);
+      const parsed=parseSheetFromWB(wb, wb.SheetNames[0]);
       if(parsed) return setDataset({name,headers:parsed.headers,rows:parsed.rows,source:f.name},'Excel loaded: '+f.name);
       return toast('Could not parse workbook','err');
     }
@@ -720,11 +834,11 @@ async function saveToLibrary(){
 }
 function downloadCSV(){
   const ds=active(); if(!ds) return toast('No dataset loaded','err');
-  const blob=new Blob([toCSV(ds.headers,ds.rows)],{type:'text/csv'});
+  const blob=new Blob(['\uFEFF'+toCSV(ds.headers,ds.rows)],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download=(ds.name||'dataset').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')+'.csv';
   document.body.appendChild(a); a.click(); a.remove();
-  toast('CSV downloaded');
+  toast('Sanitized CSV downloaded');
 }
 
 /* ---------- 2. Data Profile ---------- */
@@ -822,7 +936,7 @@ V.clean=function(){
   const ds=active(); const nums=numericCols(ds);
   return `
   <h1>Cleaning Studio</h1>
-  <p class="sub">Non-destructive operations applied to a working copy. ${S.derived?'<span class="badge b-date">transformed table active</span>':''}</p>
+  <p class="sub">Non-destructive operations applied to a working copy. Use <b>↩ Undo</b> in top bar anytime. ${S.derived?'<span class="badge b-date">transformed table active</span>':''}</p>
   <div class="grid g2" style="margin-top:16px">
     <div>
       <div class="card"><h3>One-click fixes</h3>
@@ -889,6 +1003,7 @@ function cleanQualityHTML(){ const q=qualityReport(active());
 function mutate(fn,name,detail){
   const ds=active();
   try{
+    pushHistory();
     const res=fn(ds);
     const target=S.derived||S.dataset;
     target.headers=res.headers||target.headers;
@@ -897,7 +1012,7 @@ function mutate(fn,name,detail){
     S.cleanLog.push({name,detail:finalDetail||'',ts:new Date().toLocaleTimeString()});
     Session.save(); updateTopbar(); render();
     toast(name+' applied');
-  }catch(e){ toast('Operation failed: '+e.message,'err'); }
+  }catch(e){ S.history.pop(); toast('Operation failed: '+e.message,'err'); }
 }
 function logOp(name,detail){ S.cleanLog.push({name,detail,ts:new Date().toLocaleTimeString()}); Session.save(); }
 function opDedupe(){ const before=active().rows.length;
@@ -946,7 +1061,7 @@ function opOutliers(){ const c=$('#outCol').value; const ds=active();
   mutate(()=>({rows:ds.rows.filter(r=>{const n=parseNum(r[c]); return isNaN(n)||(n>=lo&&n<=hi);})}),'Remove outliers (IQR)',c+' outside ['+fmt(lo)+', '+fmt(hi)+']'); }
 function resetWorkspace(){
   if(!S.dataset) return;
-  S.derived=null; S.cleanLog=[]; S.kpis=[]; S.charts=[]; S.sqlRes=null;
+  S.derived=null; S.cleanLog=[]; S.kpis=[]; S.charts=[]; S.sqlRes=null; S.history=[];
   Session.save(); updateTopbar(); render(); toast('Workspace reset');
 }
 
@@ -974,7 +1089,7 @@ V.transform=function(){
       <div class="card" style="margin-top:14px"><h3>Computed column</h3>
         <p class="fine">Formula syntax: <span class="mono">[units] * [unit_price] * (1 - [discount])</span></p>
         <div class="row">
-          <div class="fwrap" style="max-width:170px"><label class="f">New column name</label><input type="text" id="ccName" placeholder="net_sales"></div>
+          <div class="fwrap" style="max-width:170px"><label class="f">New column name</label><input type="text" id="ccName" placeholder="net_revenue"></div>
           <div class="fwrap"><label class="f">Expression</label><input type="text" id="ccExpr" placeholder="[units] * [unit_price]"></div>
         </div>
         <div id="ccHint" class="fine" style="margin-top:6px"></div>
@@ -1015,6 +1130,7 @@ V.transform_after=function(){
 };
 function opGroupby(){
   const g=$('#gbCol').value, v=$('#gbVal').value, fn=$('#gbFn').value; const ds=active();
+  pushHistory();
   const groups=new Map();
   ds.rows.forEach(r=>{ const k=String(r[g]??'(blank)'); if(!groups.has(k))groups.set(k,[]); groups.get(k).push(r); });
   const headers=[g, fn+'_'+(fn==='count'?g:v)];
@@ -1044,6 +1160,7 @@ function opComputed(){
   if(!expr)return toast('Enter an expression first','err');
   if(ds.headers.includes(name)){ let i=2; while(ds.headers.includes(name+'_'+i))i++; name=name+'_'+i; }
   try{
+    pushHistory();
     const usedHeaders=[...ds.headers,name];
     const rows=ds.rows.map(r=>{ let val=evalExpression(expr,ds.headers,r);
       if(typeof val==='number'&&!isFinite(val))val='';
@@ -1052,7 +1169,7 @@ function opComputed(){
     target.headers=usedHeaders; target.rows=rows;
     logOp('Computed column', name+' = '+expr);
     Session.save(); updateTopbar(); render(); toast('Column "'+name+'" added');
-  }catch(e){ toast('Expression error: '+e.message,'err'); }
+  }catch(e){ S.history.pop(); toast('Expression error: '+e.message,'err'); }
 }
 function opSort(){
   const c=$('#sortCol').value, dir=$('#sortDir').value; const ds=active();
@@ -1120,6 +1237,7 @@ function execSQL(){
 }
 function promoteSQL(){
   if(!S.sqlRes||!S.sqlRes.rows.length) return toast('No query results to promote','err');
+  pushHistory();
   S.derived={name:'SQL Result',headers:S.sqlRes.headers,rows:S.sqlRes.rows};
   logOp('SQL Query',S.sqlQuery);
   Session.save(); updateTopbar(); render(); toast('SQL result set as active working table');
@@ -1362,13 +1480,13 @@ V.dashboard=function(){
   return `
   <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap">
     <div><h1>Executive Dashboard</h1><p class="sub">Live KPIs and pinned visualizations.</p></div>
-    <div class="row">
+    <div class="row no-print">
       <button class="btn" onclick="go('viz')">+ Add chart</button>
       <button class="btn" onclick="go('kpi')">+ Add KPI</button>
       <button class="btn primary" onclick="go('report')">Generate report →</button>
     </div>
   </div>
-  ${S.kpis.length?'<h3 style="margin:16px 0 10px">Key performance indicators</h3><div class="grid g4" id="dashKpis"></div>':'<div class="empty" style="margin-top:16px">No KPIs yet — add some from the KPI tab.</div>'}
+  ${S.kpis.length?'<h3 style="margin:16px 0 10px">Key performance indicators</h3><div class="grid g4" id="dashKpis"></div>':'<div class="empty" style="margin-top:16px">No KPIs yet — add some from the KPI tab or click ⚡ Auto-Pilot.</div>'}
   <h3 style="margin:18px 0 10px">Charts</h3>
   <div id="dashCharts" class="dash-grid"></div>`;
 };
@@ -1377,11 +1495,11 @@ V.dashboard_after=function(){
   const kg=$('#dashKpis');
   if(kg)kg.innerHTML=S.kpis.map(k=>{
     const val=kpiValue(k,ds);
-    return '<div class="card kpi-card"><button class="x" onclick="delKPI(\''+k.id+'\')">×</button><div class="k" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--sub);font-weight:700">'+esc(k.label)+'</div><div class="kv">'+fmt(val)+'</div><div class="fine">'+k.agg+' of '+esc(k.col)+'</div></div>';
+    return '<div class="card kpi-card"><button class="x no-print" onclick="delKPI(\''+k.id+'\')">×</button><div class="k" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--sub);font-weight:700">'+esc(k.label)+'</div><div class="kv">'+fmt(val)+'</div><div class="fine">'+k.agg+' of '+esc(k.col)+'</div></div>';
   }).join('');
   const cg=$('#dashCharts');
-  cg.innerHTML=S.charts.length?S.charts.map(c=>'<div class="card"><button class="x" onclick="delChart(\''+c.id+'\')">×</button><canvas class="chart" data-h="240" id="dc_'+c.id+'"></canvas></div>').join('')
-    :'<div class="empty" style="grid-column:1/-1">No charts yet — pin one from the Visualize tab.</div>';
+  cg.innerHTML=S.charts.length?S.charts.map(c=>'<div class="card"><button class="x no-print" onclick="delChart(\''+c.id+'\')">×</button><canvas class="chart" data-h="240" id="dc_'+c.id+'"></canvas></div>').join('')
+    :'<div class="empty" style="grid-column:1/-1">No charts yet — pin one from the Visualize tab or click ⚡ Auto-Pilot.</div>';
   S.charts.forEach(c=>{ const cv=document.getElementById('dc_'+c.id); if(cv)drawViz(cv,c.cfg); });
 };
 
@@ -1448,9 +1566,10 @@ V.report=function(){
   if(!needDS())return '';
   return `
   <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap">
-    <div><h1>Executive Report Generator</h1><p class="sub">Branded analytical report ready to share with stakeholders.</p></div>
-    <div class="row">
+    <div><h1>Executive Report Generator</h1><p class="sub">Branded analytical report ready to share or print as PDF.</p></div>
+    <div class="row no-print">
       <button class="btn" onclick="copyReport()">Copy summary</button>
+      <button class="btn gold" onclick="window.print()">🖨️ Print / Save PDF</button>
       <button class="btn primary" onclick="downloadReport()">Download HTML report</button>
     </div>
   </div>
